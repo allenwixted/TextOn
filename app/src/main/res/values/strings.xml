@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TextOn</string>
+    <string name="ex_1234567890">ex: 1234567890</string>
+    <string name="write_your_sms_here">Write your sms here....</string>
+    <string name="send_the_sms_by_smsmanager">Send the sms by SmsManager</string>
+    <string name="send_the_sms_by_sendto">Send the sms by SENDTO</string>
+    <string name="send_the_sms_by_view">Send the sms by VIEW</string>
+    <string name="complete_the_fields_to_send_a_sms">Complete the fields to send a sms</string>
+</resources>
