@@ -3,14 +3,9 @@
     android:id="@+id/linearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/complete_the_fields_to_send_a_sms"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    >
 
     <EditText
         android:id="@+id/phoneNumber"
@@ -20,29 +15,36 @@
         android:hint="@string/ex_1234567890"
         android:inputType="phone" />
 
-    <EditText
-        android:id="@+id/smsBody"
-        android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:layout_marginBottom="30dp"
-        android:hint="@string/write_your_sms_here" />
+        <Switch
+            android:layout_marginTop="16dp"
+            android:text="@string/turn_heating_on_off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:id="@+id/heatSwitch"
+             />
+
+    <Switch
+            android:layout_marginTop="32dp"
+            android:text="@string/activate_boost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/boostSwitch"
+            />
+
+        <SeekBar
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="5"
+            android:progress="3"
+            android:text="@string/boost_timer"
+            android:id="@+id/boostSlider" />
 
     <Button
         android:id="@+id/smsManager"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/send_the_sms_by_smsmanager" />
-
-    <Button
-        android:id="@+id/smsSIntent"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/send_the_sms_by_sendto" />
-
-    <Button
-        android:id="@+id/smsVIntent"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/send_the_sms_by_view" />
 
 </LinearLayout>
