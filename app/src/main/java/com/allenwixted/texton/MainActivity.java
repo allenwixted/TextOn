@@ -27,10 +27,11 @@ import java.lang.reflect.Array;
 public class MainActivity extends AppCompatActivity {
 
     private EditText phoneNumber;
-    private Button smsManagerBtn;
+    private Button status;
     private Switch heatSwitch;
     private Switch boostSwitch;
     private SeekBar boostSlider;
+    private Button help;
 
     private SharedPreferences sp;
     private String phoneNumberSP;
@@ -51,10 +52,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         phoneNumber = (EditText) findViewById(R.id.phoneNumber);
-        smsManagerBtn = (Button) findViewById(R.id.smsManager);
+        status = (Button) findViewById(R.id.smsManager);
         heatSwitch = (Switch) findViewById(R.id.heatSwitch);
         boostSwitch = (Switch) findViewById(R.id.boostSwitch);
         boostSlider = (SeekBar) findViewById(R.id.boostSlider);
+        help = (Button) findViewById(R.id.help);
 
         sp = this.getSharedPreferences("com.allenwixted.texton", Context.MODE_PRIVATE);
         phoneNumberSP = sp.getString("phoneNumber", "Enter your unit's phone number");
@@ -75,9 +77,13 @@ public class MainActivity extends AppCompatActivity {
         heatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
+                Log.i("SP", sp.getString("phoneNumber", "Error Reading Number"));
+
                 if(isChecked){
                     sendSmsByManager("#01#");
                     sp.edit().putBoolean("heatToggle", true).apply();
+
                 } else {
                     sendSmsByManager("#02#");
                     sp.edit().putBoolean("heatToggle", false).apply();
@@ -136,11 +142,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        smsManagerBtn.setOnClickListener(new OnClickListener() {
+        status.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
-                Log.i("SP", sp.getString("phoneNumber", "ERROR READING"));
-                sendSmsByManager("TEST");
+                sendSmsByManager("#07#");
+                // https://drive.google.com/file/d/0BwYraaqEyWO3M3dnV2l4TmhjZ2NCT1ZBWF90LXRUSE1iTlpr/view
+            }
+        });
+
+        help.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWebURL("https://drive.google.com/file/d/0BwYraaqEyWO3M3dnV2l4TmhjZ2NCT1ZBWF90LXRUSE1iTlpr/view");
             }
         });
     }
@@ -166,15 +178,19 @@ public class MainActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    smsManagerBtn.setEnabled(true);
+                    heatSwitch.setEnabled(true);
+                    boostSwitch.setEnabled(true);
+                    boostSlider.setEnabled(true);
+                    status.setEnabled(true);
                 } else {
-
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    smsManagerBtn.setEnabled(false);
+                    heatSwitch.setEnabled(false);
+                    boostSwitch.setEnabled(false);
+                    boostSlider.setEnabled(false);
+                    status.setEnabled(false);
                 }
                 return;
             }
@@ -203,5 +219,10 @@ public class MainActivity extends AppCompatActivity {
         boostSwitch.setChecked(sp.getBoolean("boostToggle", false));
         boostSlider.setProgress(sp.getInt("boostSelection", 2));
         boostSwitch.setText("Activate Boost for " + String.valueOf(sp.getInt("boostValue", 45) + " minutes"));
+    }
+
+    public void openWebURL( String mURL ) {
+        Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( mURL ) );
+        startActivity( browse );
     }
 }
