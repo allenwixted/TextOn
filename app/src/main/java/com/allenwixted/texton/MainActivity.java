@@ -16,10 +16,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import java.lang.reflect.Array;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,8 +31,18 @@ public class MainActivity extends AppCompatActivity {
     private Switch heatSwitch;
     private Switch boostSwitch;
     private SeekBar boostSlider;
+
     private SharedPreferences sp;
     private String phoneNumberSP;
+    //private boolean heatToggleSP;
+    private boolean boostToggleSP;
+    private String boostTimeSP;
+
+    private String on = "on";
+    private String off = "off";
+    private String boost = "boost";
+    private int[] boostValues = new int[] {15,30,45,60,90};
+    private int boostSelection = 0;
 
 
     @Override
@@ -43,35 +56,71 @@ public class MainActivity extends AppCompatActivity {
         boostSwitch = (Switch) findViewById(R.id.boostSwitch);
         boostSlider = (SeekBar) findViewById(R.id.boostSlider);
 
+        sp = this.getSharedPreferences("com.allenwixted.texton", Context.MODE_PRIVATE);
+        phoneNumberSP = sp.getString("phoneNumber", "Enter your unit's phone number");
+        phoneNumber.setText(phoneNumberSP);
+
+        rememberSettings();
+
         phoneNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     Log.i("SP", sp.getString("phoneNumber", "ERROR READING"));
-
                 }
             }
         });
 
-        sp = this.getSharedPreferences("com.allenwixted.texton", Context.MODE_PRIVATE);
-        //sp.edit().putString("phoneNumber", "Enter your unit's phone number").apply();
-        phoneNumberSP = sp.getString("phoneNumber", "Enter your unit's phone number");
+        heatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    sendSmsByManager("#01#");
+                    sp.edit().putBoolean("heatToggle", true).apply();
+                } else {
+                    sendSmsByManager("#02#");
+                    sp.edit().putBoolean("heatToggle", false).apply();
+                }
+            }
+        });
 
-        phoneNumber.setText(phoneNumberSP);
+        boostSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Log.i("SMS", "#138#0#" + boostValues[boostSelection] + "#");
+                    sendSmsByManager("#138#0#" + boostValues[boostSelection] + "#");
+                    sp.edit().putBoolean("boostToggle", true).apply();
+                    heatSwitch.setChecked(true);
+                } else {
+                    sp.edit().putBoolean("boostToggle", false).apply();
+                }
+            }
+        });
 
-        Log.i("SP", phoneNumberSP);
+        boostSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                boostSelection = progress;
+                boostSwitch.setText("Activate Boost for " + String.valueOf(boostValues[progress]) + " minutes");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS) && ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_SMS)){
-
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)){
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 Toast.makeText(getApplicationContext(),"We need SMS to operate your heating unit",
@@ -87,20 +136,18 @@ public class MainActivity extends AppCompatActivity {
 
         smsManagerBtn.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                sendSmsByManager();
+                sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
+                Log.i("SP", sp.getString("phoneNumber", "ERROR READING"));
+                sendSmsByManager("TEST");
             }
         });
     }
 
-    public void sendSmsByManager() {
+    public void sendSmsByManager(String code) {
         try {
             // Get the default instance of the SmsManager
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumberSP,
-                    null,
-                    "SMS CODES WILL GO HERE",
-                    null,
-                    null);
+            smsManager.sendTextMessage(phoneNumberSP, null, code, null, null);
             Toast.makeText(getApplicationContext(), "Commands sent to heater successfully",
                     Toast.LENGTH_LONG).show();
         } catch (Exception ex) {
@@ -129,9 +176,30 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return;
             }
-
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        saveData();
+    }
+
+    private void saveData() {
+        sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
+        sp.edit().putBoolean("heatToggle", heatSwitch.isChecked()).apply();
+        sp.edit().putBoolean("boostToggle", boostSwitch.isChecked()).apply();
+        sp.edit().putInt("boostValue", boostValues[boostSelection]).apply();
+        sp.edit().putInt("boostSelection", boostSelection).apply();
+    }
+
+    private void rememberSettings() {
+        phoneNumber.setText(sp.getString("phoneNumber", "ERROR READING"));
+        heatSwitch.setChecked(sp.getBoolean("heatToggle", false));
+        boostSwitch.setChecked(sp.getBoolean("boostToggle", false));
+        boostSlider.setProgress(sp.getInt("boostSelection", 2));
+        boostSwitch.setText("Activate Boost for " + String.valueOf(sp.getInt("boostValue", 45) + " minutes"));
     }
 }

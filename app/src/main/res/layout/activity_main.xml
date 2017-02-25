@@ -18,6 +18,7 @@
         <Switch
             android:layout_marginTop="16dp"
             android:text="@string/turn_heating_on_off"
+            android:textColor="#B3FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="viewStart"
@@ -28,6 +29,7 @@
             android:layout_marginTop="32dp"
             android:text="@string/activate_boost"
             android:layout_width="match_parent"
+            android:textColor="#B3FFFFFF"
             android:layout_height="wrap_content"
             android:id="@+id/boostSwitch"
             />
@@ -36,8 +38,8 @@
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="5"
-            android:progress="3"
+            android:max="4"
+            android:progress="2"
             android:text="@string/boost_timer"
             android:id="@+id/boostSlider" />
 
