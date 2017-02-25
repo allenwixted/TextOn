@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     sendSmsByManager("#02#");
                     sp.edit().putBoolean("heatToggle", false).apply();
+                    boostSwitch.setChecked(false);
                 }
             }
         });
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     heatSwitch.setChecked(true);
                 } else {
                     sp.edit().putBoolean("boostToggle", false).apply();
+                    heatSwitch.setChecked(false);
                 }
             }
         });
