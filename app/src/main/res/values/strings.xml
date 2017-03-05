@@ -11,4 +11,7 @@
     <string name="activate_boost">Activate Boost for 45 mins</string>
     <string name="get_help">Get Help</string>
     <string name="cs">Check Status</string>
+    <string name="url">https://drive.google.com/file/d/0BwYraaqEyWO3M3dnV2l4TmhjZ2NCT1ZBWF90LXRUSE1iTlpr/view</string>
+    <string name="view_support">Help</string>
+    <string name="enter_your_unit_s_phone_number">Enter your unit\'s phone number</string>
 </resources>

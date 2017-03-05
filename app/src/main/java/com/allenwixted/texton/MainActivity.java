@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -56,13 +59,17 @@ public class MainActivity extends AppCompatActivity {
         heatSwitch = (Switch) findViewById(R.id.heatSwitch);
         boostSwitch = (Switch) findViewById(R.id.boostSwitch);
         boostSlider = (SeekBar) findViewById(R.id.boostSlider);
-        help = (Button) findViewById(R.id.help);
 
         sp = this.getSharedPreferences("com.allenwixted.texton", Context.MODE_PRIVATE);
         phoneNumberSP = sp.getString("phoneNumber", "Enter your unit's phone number");
         phoneNumber.setText(phoneNumberSP);
 
         rememberSettings();
+
+        if(phoneNumberSP == ""){
+            phoneNumber.setHint("Enter your unit's phone number");
+        }
+
 
         phoneNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -81,7 +88,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("SP", sp.getString("phoneNumber", "Error Reading Number"));
 
                 if(isChecked){
-                    sendSmsByManager("#01#");
+                    if(boostSwitch.isChecked()){
+
+                    } else {
+                        sendSmsByManager("#01#");
+                    }
                     sp.edit().putBoolean("heatToggle", true).apply();
 
                 } else {
@@ -128,51 +139,44 @@ public class MainActivity extends AppCompatActivity {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)){
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                Toast.makeText(getApplicationContext(),"We need SMS to operate your heating unit",
-                        Toast.LENGTH_LONG).show();
-                // sees the explanation, try again to request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, 1);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, 1);
-            }
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)){
+//                // Show an explanation to the user *asynchronously* -- don't block
+//                // this thread waiting for the user's response! After the user
+//                Toast.makeText(getApplicationContext(),"We need SMS to operate your heating unit",
+//                        Toast.LENGTH_LONG).show();
+//                // sees the explanation, try again to request the permission.
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, 1);
+//
+//            } else {
+//                // No explanation needed, we can request the permission.
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, 1);
+//            }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, 1);
         }
 
         status.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 sendSmsByManager("#07#");
-                // https://drive.google.com/file/d/0BwYraaqEyWO3M3dnV2l4TmhjZ2NCT1ZBWF90LXRUSE1iTlpr/view
-            }
-        });
-
-        help.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openWebURL("https://drive.google.com/file/d/0BwYraaqEyWO3M3dnV2l4TmhjZ2NCT1ZBWF90LXRUSE1iTlpr/view");
             }
         });
     }
 
     public void sendSmsByManager(String code) {
         try {
+            sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
             // Get the default instance of the SmsManager
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(phoneNumberSP, null, code, null, null);
-            Toast.makeText(getApplicationContext(), "Commands sent to heater successfully",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), phoneNumberSP + ": " + code, Toast.LENGTH_LONG).show();
         } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(),"SMS Failed, Check Credit and #",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"SMS Failed, Check Credit and #", Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
@@ -214,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void rememberSettings() {
-        phoneNumber.setText(sp.getString("phoneNumber", "ERROR READING"));
+        phoneNumber.setText(sp.getString("phoneNumber", ""));
         heatSwitch.setChecked(sp.getBoolean("heatToggle", false));
         boostSwitch.setChecked(sp.getBoolean("boostToggle", false));
         boostSlider.setProgress(sp.getInt("boostSelection", 2));
@@ -224,5 +228,24 @@ public class MainActivity extends AppCompatActivity {
     public void openWebURL( String mURL ) {
         Intent browse = new Intent( Intent.ACTION_VIEW , Uri.parse( mURL ) );
         startActivity( browse );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.settings:
+                openWebURL(getString(R.string.url));
+                return true;
+            default:
+                return false;
+        }
     }
 }

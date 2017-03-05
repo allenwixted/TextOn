@@ -12,7 +12,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/ex_1234567890"
+        android:hint="@string/enter_your_unit_s_phone_number"
+        android:textColorHint="@color/secondary_text_material_dark"
         android:inputType="phone" />
 
         <Switch
@@ -48,20 +49,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:textColor="@color/background_material_dark_1"
         android:text="@string/cs" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:id="@+id/help"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:text="@string/get_help"/>
-
-    </RelativeLayout>
 
 </LinearLayout>
