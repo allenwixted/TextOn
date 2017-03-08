@@ -1,4 +1,4 @@
-package com.allenwixted.texton;
+package com.texton.texton;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.allenwixted.texton;
+package com.texton.texton;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
