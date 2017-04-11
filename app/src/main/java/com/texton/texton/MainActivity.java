@@ -25,6 +25,10 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+/*
+ * Copyright (C) 2017 Allen Wixted
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText phoneNumber;
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 if(isChecked){
                     Log.i("SMS", "#138#0#" + boostValues[boostSelection] + "#");
                     sendSmsByManager("#138#0#" + boostValues[boostSelection] + "#");
+                    sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     sp.edit().putBoolean("boostToggle", true).apply();
                     heatSwitch.setChecked(true);
                 } else {
@@ -136,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
 //            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)){
 //                // Show an explanation to the user *asynchronously* -- don't block
@@ -165,8 +170,9 @@ public class MainActivity extends AppCompatActivity {
             sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
             // Get the default instance of the SmsManager
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNumberSP, null, code, null, null);
-            Toast.makeText(getApplicationContext(), phoneNumberSP + ": " + code, Toast.LENGTH_LONG).show();
+            smsManager.sendTextMessage(phoneNumber.getText().toString(), null, code, null, null);
+            Log.i("TEST", phoneNumber.getText().toString());
+            Toast.makeText(getApplicationContext(), phoneNumber.getText().toString() + ": " + code, Toast.LENGTH_LONG).show();
         } catch (Exception ex) {
             Toast.makeText(getApplicationContext(),"SMS Failed, Check Credit and #", Toast.LENGTH_LONG).show();
             ex.printStackTrace();
