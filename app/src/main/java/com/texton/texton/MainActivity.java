@@ -2,11 +2,16 @@ package com.texton.texton;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.icu.util.TimeUnit;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 //    private String off = "off";
 //    private String boost = "boost";
     private int[] boostValues = new int[] {15,30,45,60,120};
-    private int boostSelection = 0;
+    private static int boostSelection = 0;
 
 
     @Override
@@ -63,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         boostSlider = (SeekBar) findViewById(R.id.boostSlider);
 
         //changed SP file name
-        sp = this.getSharedPreferences("com.texton.texton", Context.MODE_PRIVATE);
+        //sp = this.getSharedPreferences("com.texton.texton", Context.MODE_PRIVATE);
+        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         phoneNumberSP = sp.getString("phoneNumber", "Enter your unit's phone number");
         phoneNumber.setText(phoneNumberSP);
 
@@ -80,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!hasFocus) {
                     sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     Log.i("SP", sp.getString("phoneNumber", "ERROR READING"));
+                } else {
+                    sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                 }
             }
         });
@@ -110,14 +118,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
+                    sp.edit().putInt("boostSelection", boostSelection).apply();
                     Log.i("SMS", "#138#0#" + boostValues[boostSelection] + "#");
                     sendSmsByManager("#138#0#" + boostValues[boostSelection] + "#");
                     sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     sp.edit().putBoolean("boostToggle", true).apply();
+                    startService(new Intent(getBaseContext(), TimerService.class));
                     heatSwitch.setChecked(true);
+                    boostSwitch.setEnabled(false);
                 } else {
+                    stopService(new Intent(getBaseContext(), TimerService.class));
                     sp.edit().putBoolean("boostToggle", false).apply();
                     heatSwitch.setChecked(false);
+                    boostSwitch.setEnabled(true);
                 }
             }
         });
@@ -127,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 boostSelection = progress;
                 boostSwitch.setText("Activate Boost for " + String.valueOf(boostValues[progress]) + " minutes");
+                sp.edit().putInt("boostSelection", boostSelection).apply();
             }
 
             @Override
@@ -136,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                sp.edit().putInt("boostSelection", boostSelection).apply();
             }
         });
 
@@ -210,8 +224,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         saveData();
+        super.onStop();
     }
 
     private void saveData() {
