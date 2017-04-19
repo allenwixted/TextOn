@@ -125,12 +125,12 @@ public class MainActivity extends AppCompatActivity {
                     sp.edit().putBoolean("boostToggle", true).apply();
                     startService(new Intent(getBaseContext(), TimerService.class));
                     heatSwitch.setChecked(true);
-                    boostSwitch.setEnabled(false);
+                    boostSlider.setEnabled(false);
                 } else {
                     stopService(new Intent(getBaseContext(), TimerService.class));
                     sp.edit().putBoolean("boostToggle", false).apply();
                     heatSwitch.setChecked(false);
-                    boostSwitch.setEnabled(true);
+                    boostSlider.setEnabled(true);
                 }
             }
         });
