@@ -61,6 +61,7 @@ public class TimerService extends Service {
                                 handler.postDelayed(this, 1000);
                             } else {
                                 sp.edit().putBoolean("boostToggle", false).apply();
+                                sp.edit().putBoolean("heatToggle", false).apply();
                                 Log.d("DONE", String.valueOf(boostTimer/1000));
                                 showNotification();
                             }
