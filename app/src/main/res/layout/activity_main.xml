@@ -26,8 +26,16 @@
             android:id="@+id/heatSwitch"
              />
 
+    <TextView
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/boostTitle"
+        android:text="@string/boost_mode"
+        android:textSize="18sp"
+        android:textColor="#EEEEEE"/>
+
     <Switch
-            android:layout_marginTop="32dp"
             android:text="@string/activate_boost"
             android:layout_width="match_parent"
             android:textColor="#B3FFFFFF"
@@ -44,8 +52,16 @@
             android:text="@string/boost_timer"
             android:id="@+id/boostSlider" />
 
+    <TextView
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/temptAlertTitle"
+        android:text="@string/tempTextAlert"
+        android:textSize="18sp"
+        android:textColor="#EEEEEE"/>
+
     <Switch
-        android:layout_marginTop="32dp"
         android:text="@string/turn_on_heating_if_below"
         android:layout_width="match_parent"
         android:textColor="#B3FFFFFF"
@@ -60,13 +76,23 @@
         android:progress="10"
         android:max="20"/>
 
-    <Button
-        android:id="@+id/smsManager"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@color/colorAccent"
-        android:textColor="@color/background_material_dark_1"
-        android:text="@string/cs" />
+    <RelativeLayout
+        android:id="@+id/rel_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/smsManager"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@color/colorAccent"
+            android:text="@string/cs"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/colorPrimary" />
+
+
+    </RelativeLayout>
+
 
 </LinearLayout>

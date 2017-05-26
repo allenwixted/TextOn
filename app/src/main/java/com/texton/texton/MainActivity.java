@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.util.TimeUnit;
 import android.os.Handler;
@@ -169,9 +171,11 @@ public class MainActivity extends AppCompatActivity {
                     //GET CODE FROM DECLAN
                     int tempSelected = heatAlertSlider.getProgress();
                     sp.edit().putBoolean("heatAlertSwitch", true).apply();
+                    heatAlertSlider.setEnabled(false);
                 } else {
                     //GET CODE FROM DECLAN
                     sp.edit().putBoolean("heatAlertSwitch", false).apply();
+                    heatAlertSlider.setEnabled(true);
                 }
             }
         });
@@ -180,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 sp.edit().putInt("heatAlertSlider", progress).apply();
-                heatAlertSwitch.setText("Turn on heat when house is below " + progress + (char) 0x00B0);
+                heatAlertSwitch.setText("Alert me when house is below " + progress + (char) 0x00B0);
             }
 
             @Override
@@ -334,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         //boostSwitch.setText("Activate Boost for " + String.valueOf(sp.getInt("boostValue", 45) + " minutes"));
         heatAlertSwitch.setChecked(sp.getBoolean("heatAlertSwitch", false));
         heatAlertSlider.setProgress(sp.getInt("heatAlertSlider", 10));
-        heatAlertSwitch.setText("Turn on heat when house is below " + sp.getInt("heatAlertSlider", 10) + (char) 0x00B0);
+        heatAlertSwitch.setText("Alert me when house is below " + sp.getInt("heatAlertSlider", 10) + (char) 0x00B0);
 
 
         int t = boostValues[sp.getInt("boostSelection", 2)];

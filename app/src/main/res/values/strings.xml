@@ -6,7 +6,7 @@
     <string name="send_the_sms_by_sendto">Send the sms by SENDTO</string>
     <string name="send_the_sms_by_view">Send the sms by VIEW</string>
     <string name="complete_the_fields_to_send_a_sms">Complete the fields to send a sms</string>
-    <string name="turn_heating_on_off">Turn heating on / off</string>
+    <string name="turn_heating_on_off">Turn the heating on / off</string>
     <string name="boost_timer">Boost Timer</string>
     <string name="activate_boost">Activate Boost for 45 mins</string>
     <string name="get_help">Get Help</string>
@@ -22,4 +22,6 @@
     <string name="termsQuestionAlertTitle">Have you read and do you accept the terms and conditions?</string>
     <string name="AlertYes">Yes</string>
     <string name="AlertNo">No</string>
+    <string name="tempTextAlert">Temperature Text Alert</string>
+    <string name="boost_mode">Boost Mode</string>
 </resources>
