@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.icu.util.TimeUnit;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -17,6 +18,10 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
 import android.telephony.SmsManager;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +33,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /*
@@ -41,18 +47,15 @@ public class MainActivity extends AppCompatActivity {
     private Switch heatSwitch;
     private Switch boostSwitch;
     private SeekBar boostSlider;
-    private Button help;
+    private Switch heatAlertSwitch;
+    private SeekBar heatAlertSlider;
 
     private SharedPreferences sp;
     private String phoneNumberSP;
-    //private boolean heatToggleSP;
     private boolean boostToggleSP;
     private String boostTimeSP;
 
-//    private String on = "on";
-//    private String off = "off";
-//    private String boost = "boost";
-    private int[] boostValues = new int[] {15,30,45,60,120};
+    private int[] boostValues = new int[] {30,60,120,240,480, 720};
     private static int boostSelection = 0;
 
 
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         heatSwitch = (Switch) findViewById(R.id.heatSwitch);
         boostSwitch = (Switch) findViewById(R.id.boostSwitch);
         boostSlider = (SeekBar) findViewById(R.id.boostSlider);
+        heatAlertSwitch = (Switch) findViewById(R.id.heatAlertSwitch);
+        heatAlertSlider = (SeekBar) findViewById(R.id.heatAlertSlider);
 
         //changed SP file name
         //sp = this.getSharedPreferences("com.texton.texton", Context.MODE_PRIVATE);
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         phoneNumber.setText(phoneNumberSP);
 
         rememberSettings();
+        showTermsAndConditions();
 
         if(phoneNumberSP == ""){
             phoneNumber.setHint("Enter your unit's phone number");
@@ -100,12 +106,10 @@ public class MainActivity extends AppCompatActivity {
 
                 if(isChecked){
                     if(boostSwitch.isChecked()){
-
                     } else {
                         sendSmsByManager("#01#");
                     }
                     sp.edit().putBoolean("heatToggle", true).apply();
-
                 } else {
                     sendSmsByManager("#02#");
                     sp.edit().putBoolean("heatToggle", false).apply();
@@ -139,7 +143,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 boostSelection = progress;
-                boostSwitch.setText("Activate Boost for " + String.valueOf(boostValues[progress]) + " minutes");
+                int t = boostValues[progress];
+                int hours = t / 60; //since both are ints, you get an int
+                int minutes = t % 60;
+                String time = String.format("%d:%02d", hours, minutes);
+                boostSwitch.setText("Activate Boost for " + time + "hr(s)");
                 sp.edit().putInt("boostSelection", boostSelection).apply();
             }
 
@@ -153,6 +161,39 @@ public class MainActivity extends AppCompatActivity {
                 sp.edit().putInt("boostSelection", boostSelection).apply();
             }
         });
+
+        heatAlertSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    //GET CODE FROM DECLAN
+                    int tempSelected = heatAlertSlider.getProgress();
+                    sp.edit().putBoolean("heatAlertSwitch", true).apply();
+                } else {
+                    //GET CODE FROM DECLAN
+                    sp.edit().putBoolean("heatAlertSwitch", false).apply();
+                }
+            }
+        });
+
+        heatAlertSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                sp.edit().putInt("heatAlertSlider", progress).apply();
+                heatAlertSwitch.setText("Turn on heat when house is below " + progress + (char) 0x00B0);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
@@ -177,6 +218,53 @@ public class MainActivity extends AppCompatActivity {
                 sendSmsByManager("#07#");
             }
         });
+    }
+
+    private void showTermsAndConditions() {
+        boolean agreed = sp.getBoolean("agreed",false);
+        if (!agreed) {
+            String url = "<a href=\"https://drive.google.com/drive/folders/0BwYraaqEyWO3UHJQa1p6dEk1M1U\">Terms and Conditions</a>";
+            Spanned message = Html.fromHtml(url);
+            AlertDialog d = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                d = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                        .setTitle(R.string.termsQuestionAlertTitle)
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setPositiveButton(R.string.AlertYes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                disableEnableUI(true);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putBoolean("agreed", true);
+                                editor.apply();
+                            }
+                        })
+                        .setNegativeButton(R.string.AlertNo, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                disableEnableUI(false);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putBoolean("agreed", false);
+                                editor.apply();
+                            }
+                        })
+                        .setMessage(message)
+                        .show();
+
+                TextView msgTxt = (TextView) d.findViewById(android.R.id.message);
+                msgTxt.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        }
+    }
+
+    private void disableEnableUI(Boolean enabled) {
+        phoneNumber.setEnabled(enabled);
+        status.setEnabled(enabled);
+        heatSwitch.setEnabled(enabled);
+        boostSwitch.setEnabled(enabled);
+        boostSlider.setEnabled(enabled);
+        heatAlertSwitch.setEnabled(enabled);
+        heatAlertSlider.setEnabled(enabled);
     }
 
     public void sendSmsByManager(String code) {
@@ -234,6 +322,8 @@ public class MainActivity extends AppCompatActivity {
         sp.edit().putBoolean("boostToggle", boostSwitch.isChecked()).apply();
         sp.edit().putInt("boostValue", boostValues[boostSelection]).apply();
         sp.edit().putInt("boostSelection", boostSelection).apply();
+        sp.edit().putBoolean("heatAlertSwitch", heatAlertSwitch.isChecked()).apply();
+        sp.edit().putInt("heatAlertSlider", heatAlertSlider.getProgress()).apply();
     }
 
     private void rememberSettings() {
@@ -241,7 +331,17 @@ public class MainActivity extends AppCompatActivity {
         heatSwitch.setChecked(sp.getBoolean("heatToggle", false));
         boostSwitch.setChecked(sp.getBoolean("boostToggle", false));
         boostSlider.setProgress(sp.getInt("boostSelection", 2));
-        boostSwitch.setText("Activate Boost for " + String.valueOf(sp.getInt("boostValue", 45) + " minutes"));
+        //boostSwitch.setText("Activate Boost for " + String.valueOf(sp.getInt("boostValue", 45) + " minutes"));
+        heatAlertSwitch.setChecked(sp.getBoolean("heatAlertSwitch", false));
+        heatAlertSlider.setProgress(sp.getInt("heatAlertSlider", 10));
+        heatAlertSwitch.setText("Turn on heat when house is below " + sp.getInt("heatAlertSlider", 10) + (char) 0x00B0);
+
+
+        int t = boostValues[sp.getInt("boostSelection", 2)];
+        int hours = t / 60; //since both are ints, you get an int
+        int minutes = t % 60;
+        String time = String.format(getString(R.string.timeFormat), hours, minutes);
+        boostSwitch.setText("Activate Boost for " + time + "hr(s)");
     }
 
     public void openWebURL( String mURL ) {
@@ -262,6 +362,9 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.settings:
                 openWebURL(getString(R.string.url));
+                return true;
+            case R.id.terms:
+                openWebURL(getString(R.string.terms_url));
                 return true;
             default:
                 return false;

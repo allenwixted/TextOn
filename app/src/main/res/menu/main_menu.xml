@@ -3,5 +3,7 @@
 
     <item android:id="@+id/settings"
         android:title="@string/view_support" />
+    <item android:id="@+id/terms"
+        android:title="@string/terms_amp_conditions"/>
 
 </menu>
