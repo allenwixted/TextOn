@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
             phoneNumber.setHint("Enter your unit's phone number");
         }
 
-
         phoneNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
