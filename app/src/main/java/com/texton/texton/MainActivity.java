@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean boostToggleSP;
     private String boostTimeSP;
 
-    private int[] boostValues = new int[] {30,60,120,240,480, 720};
+    private int[] boostValues = new int[] {30,60,120,240,480,720};
     private static int boostSelection = 0;
 
 
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     sp.edit().putInt("boostSelection", boostSelection).apply();
-                    Log.i("SMS", "#138#0#" + boostValues[boostSelection] + "#");
-                    sendSmsByManager("#138#0#" + boostValues[boostSelection] + "#");
+                    Log.i("SMS", "#12#0#" + boostValues[boostSelection] + "#");
+                    sendSmsByManager("#12#0#" + boostValues[boostSelection] + "#");
                     sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     sp.edit().putBoolean("boostToggle", true).apply();
                     startService(new Intent(getBaseContext(), TimerService.class));
@@ -168,12 +168,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    //GET CODE FROM DECLAN
-                    int tempSelected = heatAlertSlider.getProgress();
+                    sendSmsByManager("#21#0#1#");
+                    sendSmsByManager("#22#0#" + heatAlertSlider.getProgress() + "#40#");
                     sp.edit().putBoolean("heatAlertSwitch", true).apply();
                     heatAlertSlider.setEnabled(false);
                 } else {
-                    //GET CODE FROM DECLAN
+                    sendSmsByManager("#21#0#0#");
                     sp.edit().putBoolean("heatAlertSwitch", false).apply();
                     heatAlertSlider.setEnabled(true);
                 }
