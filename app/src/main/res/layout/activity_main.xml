@@ -91,6 +91,14 @@
             android:layout_alignParentBottom="true"
             android:textColor="@color/colorPrimary" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint"
+            android:textColor="#B3FFFFFF"
+            android:layout_marginTop="30dp"
+            android:layout_alignParentEnd="true"/>
+
 
     </RelativeLayout>
 

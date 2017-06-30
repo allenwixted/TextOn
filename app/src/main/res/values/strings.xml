@@ -15,7 +15,7 @@
     <string name="view_support">Help</string>
     <string name="enter_your_unit_s_phone_number">Enter your unit\'s phone number</string>
     <string name="timeFormat" formatted="false">%d:%02d</string>
-    <string name="turn_on_heating_if_below">Turn on when house is below 10&#xb0;</string>
+    <string name="turn_on_heating_if_below">Turn on when temp is below 10&#xb0;</string>
     <string name="degrees">Degrees</string>
     <string name="terms_amp_conditions"><![CDATA[Terms & Conditions]]></string>
     <string name="terms_url">https://drive.google.com/drive/folders/0BwYraaqEyWO3UHJQa1p6dEk1M1U</string>
@@ -24,4 +24,5 @@
     <string name="AlertNo">No</string>
     <string name="tempTextAlert">Temperature Text Alert</string>
     <string name="boost_mode">Boost Mode</string>
+    <string name="hint">Hint: Only master user has acccess to all functions. Extra users can only use on /off.</string>
 </resources>
