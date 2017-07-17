@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     sp.edit().putInt("boostSelection", boostSelection).apply();
-                    Log.i("SMS", "#12#0#" + boostValues[boostSelection] + "#");
-                    sendSmsByManager("#12#0#" + boostValues[boostSelection] + "#");
+                    Log.i("SMS", "#12#0#" + boostValues[boostSelection] + "#0#");
+                    sendSmsByManager("#12#0#" + boostValues[boostSelection] + "#0#");
                     sp.edit().putString("phoneNumber", phoneNumber.getText().toString()).apply();
                     sp.edit().putBoolean("boostToggle", true).apply();
                     startService(new Intent(getBaseContext(), TimerService.class));
